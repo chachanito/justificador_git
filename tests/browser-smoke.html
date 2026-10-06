@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><title>Pruebas del Justificador</title></head>
+<body>
+<pre id="result">Ejecutando…</pre>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script type="module">
+    import { justifyText, normalizeTypography } from '../assets/js/justifier.js';
+
+    const checks = [];
+    const check = (name, condition) => checks.push({ name, passed: Boolean(condition) });
+
+    check('Normalización tipográfica', normalizeTypography('“Sí”—dijo') === '"Sí"-dijo');
+    const justified = justifyText('uno dos tres cuatro cinco seis siete ocho nueve diez', 30).split('\n');
+    check('Línea intermedia exacta', [...justified[0]].length === 30);
+    check('Viñeta y sangría', justifyText('• Una viñeta suficientemente extensa para usar dos líneas', 30).split('\n')[1].startsWith('  '));
+    check('Mammoth disponible', typeof window.mammoth?.extractRawText === 'function');
+    check('PDF.js disponible', typeof window.pdfjsLib?.getDocument === 'function');
+    check('docx disponible', typeof window.docx?.Packer?.toBlob === 'function');
+    check('jsPDF disponible', typeof window.jspdf?.jsPDF === 'function');
+
+    const failures = checks.filter((item) => !item.passed);
+    const result = document.querySelector('#result');
+    result.dataset.failures = String(failures.length);
+    result.textContent = checks.map((item) => `${item.passed ? 'OK' : 'ERROR'} · ${item.name}`).join('\n');
+</script>
+</body>
+</html>

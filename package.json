@@ -1,0 +1,11 @@
+{
+  "name": "justificador-git",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Justificador de texto local con importación de TXT, DOCX y PDF.",
+  "scripts": {
+    "test": "node --test"
+  },
+  "license": "MIT"
+}

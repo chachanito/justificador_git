@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><title>Integración del Justificador</title></head>
+<body>
+<pre id="result">Ejecutando…</pre>
+<iframe id="app" src="../index.html" hidden></iframe>
+<script>
+    document.querySelector('#app').addEventListener('load', () => {
+        const app = document.querySelector('#app').contentDocument;
+        const source = app.querySelector('#source-text');
+        const width = app.querySelector('#line-width');
+        source.value = '• Esta prueba confirma que la interfaz procesa una viñeta extensa y habilita sus descargas correctamente.';
+        width.value = '30';
+        app.querySelector('#justify-button').click();
+
+        const lines = app.querySelector('#result-text').textContent.split('\n');
+        const checks = [
+            ['Genera varias líneas', lines.length > 1],
+            ['Respeta ancho máximo', lines.every((line) => [...line].length <= 30)],
+            ['Conserva viñeta', lines[0].startsWith('• ')],
+            ['Conserva sangría', lines.slice(1).every((line) => line.startsWith('  '))],
+            ['Habilita TXT', !app.querySelector('#download-txt').disabled],
+            ['Habilita Word', !app.querySelector('#download-docx').disabled],
+            ['Habilita PDF', !app.querySelector('#download-pdf').disabled],
+        ];
+        const failures = checks.filter(([, passed]) => !passed);
+        const result = document.querySelector('#result');
+        result.dataset.failures = String(failures.length);
+        result.textContent = checks.map(([name, passed]) => `${passed ? 'OK' : 'ERROR'} · ${name}`).join('\n');
+    });
+</script>
+</body>
+</html>

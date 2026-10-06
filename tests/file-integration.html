@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><title>Importación Word y PDF</title></head>
+<body>
+<pre id="result">Ejecutando…</pre>
+<iframe id="app" src="../index.html" hidden></iframe>
+<script>
+    const waitForStatusUpdate = (appWindow, status, predicate) => new Promise((resolve) => {
+        const finishIfReady = () => {
+            if (!predicate()) return;
+            observer.disconnect();
+            resolve(true);
+        };
+        const observer = new appWindow.MutationObserver(finishIfReady);
+        observer.observe(status, { childList: true, characterData: true, subtree: true });
+        finishIfReady();
+    });
+
+    const chooseFile = (appWindow, input, file) => {
+        const transfer = new appWindow.DataTransfer();
+        transfer.items.add(file);
+        input.files = transfer.files;
+        input.dispatchEvent(new appWindow.Event('change', { bubbles: true }));
+    };
+
+    document.querySelector('#app').addEventListener('load', async () => {
+        const frame = document.querySelector('#app');
+        const appWindow = frame.contentWindow;
+        const app = frame.contentDocument;
+        const checks = [];
+        const input = app.querySelector('#file-input');
+        const status = app.querySelector('#status');
+
+        try {
+            const { Document, Packer, Paragraph } = appWindow.docx;
+            const wordDocument = new Document({ sections: [{ children: [new Paragraph('Documento Word de prueba para justificar correctamente.')] }] });
+            const wordBlob = await Packer.toBlob(wordDocument);
+            chooseFile(appWindow, input, new appWindow.File([wordBlob], 'prueba.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }));
+            const wordLoadedPromise = waitForStatusUpdate(appWindow, status, () => app.querySelector('#source-text').value.includes('Documento Word de prueba'));
+            const wordLoaded = await wordLoadedPromise;
+            checks.push(['Importa DOCX', wordLoaded]);
+        } catch (error) {
+            checks.push([`Importa DOCX (${error.message})`, false]);
+        }
+
+        try {
+            const { jsPDF } = appWindow.jspdf;
+            const pdf = new jsPDF();
+            pdf.text('Documento PDF de prueba para justificar correctamente.', 20, 20);
+            const pdfBlob = pdf.output('blob');
+            const pdfLoadedPromise = waitForStatusUpdate(appWindow, status, () => app.querySelector('#source-text').value.includes('Documento PDF de prueba'));
+            chooseFile(appWindow, input, new appWindow.File([pdfBlob], 'prueba.pdf', { type: 'application/pdf' }));
+            const pdfLoaded = await pdfLoadedPromise;
+            const pdfDetail = pdfLoaded ? '' : `: ${app.querySelector('#status').textContent || app.querySelector('#source-text').value}`;
+            checks.push([`Importa PDF${pdfDetail}`, pdfLoaded]);
+        } catch (error) {
+            checks.push([`Importa PDF (${error.message})`, false]);
+        }
+
+        const failures = checks.filter(([, passed]) => !passed);
+        const result = document.querySelector('#result');
+        result.dataset.failures = String(failures.length);
+        result.textContent = checks.map(([name, passed]) => `${passed ? 'OK' : 'ERROR'} · ${name}`).join('\n');
+    });
+</script>
+</body>
+</html>
