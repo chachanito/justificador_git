@@ -3,91 +3,74 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Justifica texto a un ancho configurable y permite importar TXT, Word y PDF directamente en el navegador.">
-    <title>Justificador de texto</title>
+    <meta name="description" content="Justifica texto a 75 caracteres e importa archivos TXT, Word y PDF.">
+    <title>Justificador de Texto</title>
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
-    <header class="hero">
-        <div class="shell hero__content">
-            <a class="brand" href="./" aria-label="Inicio del Justificador">
-                <span class="brand__mark" aria-hidden="true">J</span>
-                <span>Justificador</span>
-            </a>
-            <div class="hero__copy">
-                <p class="eyebrow">Formato limpio, sin subir tus archivos</p>
-                <h1>Textos alineados y listos para compartir.</h1>
-                <p class="hero__lead">Pega un texto o abre un archivo TXT, Word o PDF. El contenido se procesa localmente en tu navegador.</p>
-            </div>
-        </div>
+    <header class="page-header">
+        <h1><span aria-hidden="true">📝</span> Justificador de Texto</h1>
+        <p>Optimizado para reportes y formatos de 75 caracteres.</p>
     </header>
 
-    <main class="shell workspace">
-        <section class="panel" aria-labelledby="source-title">
-            <div class="panel__heading">
+    <main class="container">
+        <section class="card" aria-labelledby="form-title">
+            <div class="card-header">
+                <span class="tool-icon" aria-hidden="true">🔧</span>
                 <div>
-                    <p class="step">01 · Contenido</p>
-                    <h2 id="source-title">Carga o pega el texto</h2>
+                    <h2 id="form-title">Formateo de Textos</h2>
+                    <p>Pega el texto y ajustaremos uniformemente los espacios a 75 caracteres.</p>
                 </div>
-                <span class="privacy-pill">Procesamiento local</span>
             </div>
 
-            <input id="file-input" class="sr-only" type="file" accept=".txt,.md,.docx,.pdf,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
-            <label id="drop-zone" class="drop-zone" for="file-input" tabindex="0">
-                <span class="drop-zone__icon" aria-hidden="true">↑</span>
-                <span class="drop-zone__title">Selecciona o arrastra un archivo</span>
-                <span class="drop-zone__hint">TXT, MD, DOCX o PDF · máximo 20 MB</span>
-            </label>
+            <div class="divider"></div>
+
+            <div class="file-row">
+                <div>
+                    <strong>Archivo opcional</strong>
+                    <span>TXT, Word (.docx) o PDF</span>
+                </div>
+                <input id="file-input" class="sr-only" type="file" accept=".txt,.md,.docx,.pdf,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                <label id="drop-zone" class="file-button" for="file-input" tabindex="0">📎 Seleccionar archivo</label>
+            </div>
+
             <div id="file-info" class="file-info" hidden>
                 <span id="file-name"></span>
-                <button id="remove-file" class="link-button" type="button">Quitar archivo</button>
+                <button id="remove-file" type="button">Quitar</button>
             </div>
 
-            <label class="field-label" for="source-text">Texto original</label>
-            <textarea id="source-text" rows="12" placeholder="Pega aquí uno o varios párrafos. Las viñetas y listas numeradas conservarán su sangría."></textarea>
+            <label class="field-label" for="source-text">Pega tu texto normal aquí:</label>
+            <textarea id="source-text" rows="11" placeholder="Ejemplo:&#10;• Pega aquí tus viñetas o párrafos...&#10;• Serán procesados manteniendo su forma y justificados a 75 caracteres."></textarea>
 
-            <div class="settings-row">
-                <label class="width-control" for="line-width">
-                    <span>Ancho de línea</span>
-                    <span class="width-control__input"><input id="line-width" type="number" min="30" max="140" value="75"> caracteres</span>
-                </label>
+            <div class="controls">
+                <label class="width-control" for="line-width">Ancho: <input id="line-width" type="number" min="30" max="140" value="75"> caracteres</label>
                 <div class="actions">
-                    <button id="clear-button" class="button button--ghost" type="button">Limpiar</button>
-                    <button id="justify-button" class="button button--primary" type="button">Justificar texto</button>
+                    <button id="justify-button" class="button button-primary" type="button">⚙️ Justificar ahora</button>
+                    <button id="clear-button" class="button button-outline" type="button">🔄 Limpiar</button>
                 </div>
             </div>
             <p id="status" class="status" role="status" aria-live="polite"></p>
         </section>
 
-        <section id="result-panel" class="panel panel--result" aria-labelledby="result-title">
-            <div class="panel__heading">
+        <section id="result-panel" class="card result-card" aria-labelledby="result-title">
+            <div class="result-heading">
                 <div>
-                    <p class="step">02 · Resultado</p>
-                    <h2 id="result-title">Vista previa</h2>
+                    <h2 id="result-title">✅ Resultado</h2>
+                    <p>Vista previa del texto justificado.</p>
                 </div>
-                <div id="stats" class="stats">Sin procesar</div>
+                <span id="stats">Sin procesar</span>
             </div>
-
-            <pre id="result-text" class="result" tabindex="0" aria-label="Texto justificado">El resultado aparecerá aquí.</pre>
-
-            <div class="export-bar">
-                <button id="copy-button" class="button button--secondary" type="button" disabled>Copiar</button>
-                <button id="download-txt" class="button button--secondary" type="button" disabled>Descargar TXT</button>
-                <button id="download-docx" class="button button--secondary" type="button" disabled>Descargar Word</button>
-                <button id="download-pdf" class="button button--secondary" type="button" disabled>Descargar PDF</button>
+            <pre id="result-text" class="result" tabindex="0">El resultado aparecerá aquí.</pre>
+            <div class="export-actions">
+                <button id="copy-button" class="button button-outline" type="button" disabled>Copiar</button>
+                <button id="download-txt" class="button button-outline" type="button" disabled>Descargar TXT</button>
+                <button id="download-docx" class="button button-outline" type="button" disabled>Descargar Word</button>
+                <button id="download-pdf" class="button button-outline" type="button" disabled>Descargar PDF</button>
             </div>
         </section>
-
-        <aside class="notes" aria-label="Información importante">
-            <div><strong>Privacidad.</strong> El archivo no se envía a ningún servidor.</div>
-            <div><strong>PDF escaneado.</strong> Necesita OCR previo para contener texto seleccionable.</div>
-            <div><strong>Word.</strong> Se admite el formato moderno <code>.docx</code>.</div>
-        </aside>
     </main>
 
-    <footer class="footer">
-        <div class="shell">Proyecto abierto para usar, adaptar y mejorar.</div>
-    </footer>
+    <footer>Los archivos se procesan localmente y no se envían a ningún servidor.</footer>
 
     <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>

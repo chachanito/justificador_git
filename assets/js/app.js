@@ -68,6 +68,7 @@ function runJustifier({ scroll = true } = {}) {
     elements.width.value = String(width);
     currentResult = justifyText(source, width);
     elements.result.textContent = currentResult;
+    document.querySelector('#result-panel').classList.add('is-visible');
 
     const stats = textStats(currentResult);
     elements.stats.textContent = `${stats.lines} líneas · máximo ${stats.longestLine} caracteres`;
@@ -284,6 +285,7 @@ elements.clear.addEventListener('click', () => {
     elements.fileInput.value = '';
     elements.fileInfo.hidden = true;
     elements.result.textContent = 'El resultado aparecerá aquí.';
+    document.querySelector('#result-panel').classList.remove('is-visible');
     elements.stats.textContent = 'Sin procesar';
     currentResult = '';
     currentBaseName = 'texto_justificado';
